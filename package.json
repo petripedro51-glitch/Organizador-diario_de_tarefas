@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-  "start": "npx tsx server.ts",
+  "build": "tsc server.ts --outDir dist",
+  "start": "node dist/server.js",
   "dev": "npx tsx watch server.ts"
   },
   "keywords": [],
@@ -11,7 +12,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@types/node": "^26.6.3",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "express": "^5.2.1",
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.6",
+    "@types/node": "^26.6.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
