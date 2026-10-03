@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "npx tsx server.ts",
-    "dev": "npx tsx watch server.ts"
+  "start": "npx tsx server.ts",
+  "dev": "npx tsx watch server.ts"
   },
   "keywords": [],
   "author": "",
