@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caderno Pessoal - Diário & Tarefas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #080b10; color: #e6edf3; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* HEADER */
+        header { background-color: #0d1117; padding: 15px 30px; border-bottom: 2px solid #1f242d; display: flex; justify-content: space-between; align-items: center; }
+        .user-title { font-size: 1.4em; color: #58a6ff; font-weight: 600; }
+        .header-actions { display: flex; gap: 15px; }
+        button { cursor: pointer; border-radius: 6px; border: none; font-weight: 600; padding: 8px 16px; }
+        .btn-update { background-color: #238636; color: white; }
+        .btn-exit { background-color: #da3633; color: white; }
+
+        /* LAYOUT PRINCIPAL */
+        .dashboard-container { display: flex; gap: 20px; padding: 20px; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; }
+        main { flex: 3; display: flex; flex-direction: column; gap: 25px; }
+        aside { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+        /* CARDS E SEÇÕES */
+        .card { background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; }
+        h2 { font-size: 1.2em; color: #8b949e; margin-bottom: 15px; border-bottom: 1px solid #21262d; padding-bottom: 8px; }
+
+        /* FORMULÁRIO DE TAREFAS */
+        .form-tarefa { display: flex; flex-direction: column; gap: 12px; }
+        .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        input, select, textarea { background-color: #0d1117; border: 1px solid #30363d; color: #e6edf3; padding: 8px 12px; border-radius: 6px; font-family: inherit; }
+        input[type="text"], textarea { flex: 1; }
+        .btn-add { background-color: #1f6feb; color: white; margin-top: 5px; }
+
+        /* LISTA DE TAREFAS */
+        .tarefa-item { background-color: #0d1117; border-left: 4px solid #58a6ff; padding: 12px; margin-top: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .tarefa-detalhes { font-size: 0.85em; color: #8b949e; margin-top: 4px; }
+        .btn-danger { background-color: #a42e2b; color: white; padding: 4px 8px; font-size: 0.8em; }
+
+        /* DIÁRIO */
+        .diario-entry { background-color: #0d1117; border: 1px solid #21262d; padding: 12px; border-radius: 6px; margin-bottom: 10px; }
+        .diario-header { font-size: 0.8em; color: #58a6ff; margin-bottom: 5px; }
+
+        /* TABELAS DO ASIDE */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #21262d; }
+        th { color: #8b949e; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="user-title" id="notebook-title">Caderno de [Usuário]</div>
+        <div class="header-actions">
+            <button class="btn-update" id="btn-atualizar">Atualizar Página</button>
+            <button class="btn-exit" id="btn-sair">Sair</button>
+        </div>
+    </header>
+
+    <!-- PAINEL PRINCIPAL -->
+    <div class="dashboard-container">
+        
+        <!-- SECTION CENTRAL (TAREFAS E DIÁRIO) -->
+        <main>
+            <!-- SEÇÃO DE TAREFAS -->
+            <section class="card">
+                <h2>Gerenciador de Tarefas</h2>
+                <form class="form-tarefa" id="form-nova-tarefa">
+                    <input type="text" id="task-title" placeholder="Título da tarefa..." required>
+                    <input type="text" id="task-comment" placeholder="Comentários/Anotações adicionais...">
+                    
+                    <div class="form-row">
+                        <div>
+                            <label>Data Limite:</label>
+                            <input type="date" id="task-date">
+                        </div>
+                        <div>
+                            <label>Importância:</label>
+                            <select id="task-importance">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média">Média</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Dificuldade:</label>
+                            <select id="task-difficulty">
+                                <option value="Fácil">Fácil</option>
+                                <option value="Médio">Médio</option>
+                                <option value="Difícil">Difícil</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-add">Adicionar Tarefa</button>
+                </form>
+
+                <div id="lista-tarefas-container" style="margin-top: 20px;">
+                    <!-- As tarefas adicionadas vão aparecer aqui -->
+                </div>
+            </section>
+
+            <!-- SEÇÃO DO DIÁRIO -->
+            <section class="card">
+                <h2>Diário de Registros</h2>
+                <form class="form-tarefa" id="form-diario">
+                    <textarea id="diario-texto" rows="3" placeholder="Escreva sobre o seu dia ou anotações importantes..." required></textarea>
+                    <button type="submit" class="btn-add" style="background-color: #238636;">Salvar Registro no Diário</button>
+                </form>
+
+                <div id="diario-registros" style="margin-top: 20px;">
+                    <!-- Histórico de registros do diário -->
+                </div>
+            </section>
+        </main>
+
+        <!-- ASIDE LATERAL (RESUMOS) -->
+        <aside>
+            <section class="card">
+                <h2>Mais Importantes</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tarefa</th>
+                            <th>Prioridade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-importantes">
+                        <!-- Filtrado via JS -->
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="card">
+                <h2>Dificuldade</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tarefa</th>
+                            <th>Nível</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-dificuldade">
+                        <!-- Filtrado via JS -->
+                    </tbody>
+                </table>
+            </section>
+        </aside>
+
+    </div>
+
+    <!-- SCRIPT DA LÓGICA DA TELA -->
+    <script>
+        const usuarioLogado = localStorage.getItem('usuarioLogado');
+
+        // Se não houver utilizador autenticado, redireciona para o login
+        if (!usuarioLogado) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('notebook-title').innerText = `Caderno de ${usuarioLogado}`;
+        }
+
+        let tarefas = [];
+        let diarios = [];
+
+        // Elementos do DOM
+        const formTarefa = document.getElementById('form-nova-tarefa');
+        const formDiario = document.getElementById('form-diario');
+        const containerTarefas = document.getElementById('lista-tarefas-container');
+        const containerDiario = document.getElementById('diario-registros');
+        const tabelaImportantes = document.getElementById('tabela-importantes');
+        const tabelaDificuldade = document.getElementById('tabela-dificuldade');
+
+        // Carregar Dados da API
+        async function carregarDadosDoServidor() {
+            try {
+                const res = await fetch(`http://localhost:3000/api/dados/${usuarioLogado}`);
+                if (res.ok) {
+                    const dados = await res.json();
+                    tarefas = dados.tarefas || [];
+                    diarios = dados.diario || [];
+                    renderizarTudo();
+                    renderizarDiario();
+                }
+            } catch (err) {
+                console.error("Erro ao carregar dados:", err);
+            }
+        }
+
+        // --- GESTÃO DE TAREFAS ---
+        formTarefa.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const novaTarefa = {
+                id: Date.now(),
+                titulo: document.getElementById('task-title').value,
+                comentario: document.getElementById('task-comment').value,
+                dataLimite: document.getElementById('task-date').value,
+                importancia: document.getElementById('task-importance').value,
+                dificuldade: document.getElementById('task-difficulty').value
+            };
+
+            await fetch('http://localhost:3000/api/tarefas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user: usuarioLogado, tarefa: novaTarefa })
+            });
+
+            tarefas.push(novaTarefa);
+            formTarefa.reset();
+            renderizarTudo();
+        });
+
+        async function deletarTarefa(id) {
+            await fetch('http://localhost:3000/api/tarefas', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user: usuarioLogado, id })
+            });
+
+            tarefas = tarefas.filter(t => t.id !== id);
+            renderizarTudo();
+        }
+
+        // --- GESTÃO DO DIÁRIO ---
+        formDiario.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const texto = document.getElementById('diario-texto').value;
+
+            const novoRegistro = {
+                id: Date.now(),
+                texto: texto,
+                dataHora: new Date().toLocaleString('pt-BR')
+            };
+
+            await fetch('http://localhost:3000/api/diario', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user: usuarioLogado, registro: novoRegistro })
+            });
+
+            diarios.unshift(novoRegistro);
+            formDiario.reset();
+            renderizarDiario();
+        });
+
+        // --- RENDERIZAÇÃO ---
+        function renderizarTudo() {
+            renderizarTarefas();
+            renderizarTabelasAside();
+        }
+
+        function renderizarTarefas() {
+            containerTarefas.innerHTML = '';
+            tarefas.forEach(t => {
+                const div = document.createElement('div');
+                div.className = 'tarefa-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${t.titulo}</strong>
+                        <div class="tarefa-detalhes">
+                            ${t.comentario ? `<em>${t.comentario}</em> | ` : ''}
+                            Data: ${t.dataLimite || 'Sem data'} | Prioridade: ${t.importancia} | Dificuldade: ${t.dificuldade}
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="deletarTarefa(${t.id})" class="btn-danger">Excluir</button>
+                    </div>
+                `;
+                containerTarefas.appendChild(div);
+            });
+        }
+
+        function renderizarDiario() {
+            containerDiario.innerHTML = '';
+            diarios.forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'diario-entry';
+                div.innerHTML = `
+                    <div class="diario-header">${d.dataHora}</div>
+                    <p style="white-space: pre-wrap;">${d.texto}</p>
+                `;
+                containerDiario.appendChild(div);
+            });
+        }
+
+        function renderizarTabelasAside() {
+            tabelaImportantes.innerHTML = '';
+            tarefas.filter(t => t.importancia === 'Alta' || t.importancia === 'Média')
+                .forEach(t => {
+                    tabelaImportantes.innerHTML += `<tr><td>${t.titulo}</td><td>${t.importancia}</td></tr>`;
+                });
+
+            tabelaDificuldade.innerHTML = '';
+            tarefas.forEach(t => {
+                tabelaDificuldade.innerHTML += `<tr><td>${t.titulo}</td><td>${t.dificuldade}</td></tr>`;
+            });
+        }
+
+        // Ações de Navegação
+        document.getElementById('btn-atualizar').addEventListener('click', () => {
+            window.location.reload();
+        });
+
+        document.getElementById('btn-sair').addEventListener('click', () => {
+            localStorage.removeItem('usuarioLogado');
+            window.location.href = 'login.html';
+        });
+
+        // Inicialização
+        carregarDadosDoServidor();
+    </script>
+</body>
+</html>
